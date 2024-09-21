@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking appointment</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
+    <link rel="stylesheet" href="booking.css"/>
+</head>
+
+<body>
+    <div class="heading">
+        <h1>Booking Appointment</h1>
+    </div>
+    <div class="main_container">
+        <div class="subcontainer">
+            <label for="name">Name :</label>
+            <input type="text" id="name" name="name">
+            <label for="number">Number :</label>
+            <input type="number" id="number" name="number">
+            <label for="mail">Email :</label>
+            <input type="email" id="mail" name="mail">
+            <button onclick="submission()">Sumbit</button>
+        </div>
+    </div>
+    <div class="task_listbox" id="tasklist">
+        <ul class="task_list"></ul>
+    </div>
+
+</body>
+<script src="booking.js"></script>
+</html>
