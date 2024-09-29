@@ -56,7 +56,7 @@ app.post('/main/tablecreation', async (req, res, next) => {
 //backend to get tablemames
 app.get('/tables/fetch', async (req, res) => {
     console.log(" tables called");
-    try {
+    try { 
         const queryInterface = sequelize.getQueryInterface();
         const tables = await queryInterface.showAllTables();
         if (tables.length === 0) {

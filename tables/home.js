@@ -217,10 +217,14 @@ function createfetched (fetcheddata,fieldnames,tablename){
     form.addEventListener("submit", (event) => {
         event.preventDefault();
         // Gather input values
+        //using the FormData API to extract data from a form
+        // and dynamically create a newRecord object based on the fieldnames array
         const formData = new FormData(form);
         const newRecord = {};
         
         fieldnames.forEach(fieldname => {
+            //formData.get(fieldname) to retrieve the value 
+            //from the form that corresponds to the field name
             newRecord[fieldname] = formData.get(fieldname);
         });
 
