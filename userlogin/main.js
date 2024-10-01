@@ -1,11 +1,12 @@
 const express = require("express");
 const path = require("path");
 const app = express();
+const cors=require("cors");
 
 // Middlewares
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json()); // For JSON payloads if needed
-
+app.use(cors());
 // Router Path
 const router = require('./router/router_path');  // Ensure this file exists
 app.use("/user", router);

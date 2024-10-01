@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create DB</title>
+    <title>Login</title>
     <link rel="stylesheet" href="home.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
 </head>
@@ -20,12 +20,14 @@
 </body>
 <script>
     document.getElementById("loginbutton").addEventListener("click", async () => {
-        const mail = document.getElementById("mail");
-        const password = document.getElementById("password");
+        const mail = document.getElementById("mail").value;
+        const password = document.getElementById("password").value;
         try{
         await axios.post('http://localhost:3000/user/login', { mail, password })
-            .then(() => {
+            .then((res) => {
+                console.log(res.data.message);
 
+                alert(res.data.message);
             })
             .catch(err => console.log(err))
         }catch (err){
