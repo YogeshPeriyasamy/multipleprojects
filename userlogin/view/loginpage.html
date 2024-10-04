@@ -22,15 +22,23 @@
     document.getElementById("loginbutton").addEventListener("click", async () => {
         const mail = document.getElementById("mail").value;
         const password = document.getElementById("password").value;
-        try{
-        await axios.post('http://localhost:3000/user/login', { mail, password })
-            .then((res) => {
-                console.log(res.data.message);
-
-                alert(res.data.message);
+        try {
+            await axios.post('http://localhost:3000/user/login', { mail, password }, {
+                headers: {
+                    'Content-Type': 'application/json' 
+                }, withCredentials: true
             })
-            .catch(err => console.log(err))
-        }catch (err){
+                .then((res) => {
+                    if (res.data.redirect) {
+                        // If the response is a redirect, navigate to the redirected URL
+                        window.location.href = res.data.url;
+                    } else {
+
+                        alert(res.data.message);
+                    }
+                })
+                .catch(err => console.log(err))
+        } catch (err) {
             console.log(err);
         }
     })
