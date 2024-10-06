@@ -154,6 +154,8 @@
     // to get the leaderboard
     document.getElementById("leaderboard").addEventListener('click',async()=>{
         try{
+            const listbox=document.querySelector(".leaderboardlist");
+            listbox.innerHTML="";
         const list=await axios.get('http://localhost:3000/user/getleaderboard',{ withCredentials: true });
         list.data.forEach(expense=>{
             formleaderboard(expense)
@@ -177,7 +179,7 @@
     //         }
     //     }
     //   ] so to get the user name we should use expense.user.name and in the backend we must add ..include:[{model:userdb,attributes:['name']}]
-      list.textContent=`${expense.amount}\t\t${expense.user.name}\t\t${expense.description}\t\t${expense.category}`;
+      list.textContent=`${expense.userId}-${expense.user.name}---${expense.totalspent}`;
       const listbox=document.querySelector(".leaderboardlist");
       listbox.appendChild(list);
     }

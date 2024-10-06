@@ -1,3 +1,4 @@
+const Sequelize=require('sequelize');
 const expensedb=require('../models/expense');
 const userdb=require('../models/user');
 const path = require("path");
@@ -140,8 +141,14 @@ exports.get_expense=async(req,res)=>{
 exports.getleaderboard=async(req,res)=>{
    try{
       const allexpenses=await expensedb.findAll({
+        attributes:[
+            'userId',
+            [Sequelize.fn('sum',Sequelize.col('amount')),'totalspent']//sum the amount of the particular group and save them in totalsent
+        ],
+        group:['userId'],//grouping by userId
         include:[{model:userdb,attributes:['name']}],
-        order:[['amount','DESC']],
+        order:[[Sequelize.col('totalspent'),'DESC']],
+       
       }) 
       res.json(allexpenses);
    }catch(err){
