@@ -21,4 +21,14 @@ router.post("/addexpense",controller_route.add_expense);
 
 //to get old expense from db
 router.get("/getexpense",controller_route.get_expense);
+
+// creating a path for purchase controller
+const purchase_route=require('../controller/purchase');
+router.post('/purchase/premium',purchase_route.createpremium);
+
+//to verify payment
+router.post('/verify',purchase_route.verify_payment);
+
+//to check whethet its already premium
+router.get('/checkstatus',purchase_route.checkpremiumstaus);
 module.exports=router;

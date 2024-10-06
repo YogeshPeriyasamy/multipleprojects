@@ -23,11 +23,11 @@ app.use(cors({
     origin: 'http://localhost:3001', // Frontend origin
     credentials: true 
 }));
-
-
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json()); 
 
+//here first install dotenv and require them as follows in main.js so we can use them in any folders
+require('dotenv').config({path:('./util/.env')});
 
 // Router Path
 const router = require('./router/router_path');  
@@ -37,7 +37,7 @@ app.use("/user", router);
 const sequelize = require('./util/database');  
 const userdb = require('./models/user');      
 const expensedb=require('./models/expense');
-
+const orderdb=require('./models/orderpremium');
 //establishing connection between tables
 expensedb.belongsTo(userdb, {
     foreignKey: {
@@ -49,6 +49,11 @@ expensedb.belongsTo(userdb, {
 userdb.hasMany(expensedb, {
     foreignKey: 'userId'
 });
+
+userdb.hasMany(orderdb);
+orderdb.belongsTo(userdb);
+
+
 // Sync models and start the server
 sequelize.sync()
     .then(() => {
