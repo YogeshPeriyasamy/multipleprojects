@@ -1,4 +1,5 @@
-
+const expensedb=require('../models/expense');
+const userdb=require('../models/user');
 const path = require("path");
 const bcrypt = require("bcrypt");
 exports.signup_page = (req, res) => {
@@ -131,5 +132,19 @@ exports.get_expense=async(req,res)=>{
      res.json(expenses);
    }catch(err){
     console.log(err);
+   }
+}
+
+//to get the leaderboard list
+
+exports.getleaderboard=async(req,res)=>{
+   try{
+      const allexpenses=await expensedb.findAll({
+        include:[{model:userdb,attributes:['name']}],
+        order:[['amount','DESC']],
+      }) 
+      res.json(allexpenses);
+   }catch(err){
+    console.log('while getting leaderboard from backend',err)
    }
 }

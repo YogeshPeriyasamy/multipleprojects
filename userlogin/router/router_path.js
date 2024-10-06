@@ -31,4 +31,6 @@ router.post('/verify',purchase_route.verify_payment);
 
 //to check whethet its already premium
 router.get('/checkstatus',purchase_route.checkpremiumstaus);
+//to get the leaderboard
+router.get('/getleaderboard',controller_route.getleaderboard);
 module.exports=router;
