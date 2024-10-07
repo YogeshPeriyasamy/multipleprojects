@@ -1,4 +1,5 @@
 const Sequelize=require('sequelize');
+const sequelize=require('../util/database');
 const expensedb=require('../models/expense');
 const userdb=require('../models/user');
 const path = require("path");
@@ -104,27 +105,33 @@ exports.openexpensepage = (req, res) => {
 
 //to add expense to db
 exports.add_expense = async (req, res) => {
-    const { amount, description, category } = req.body;
     
+    const { amount, description, category } = req.body;
+    // here we must use instance that connects data base not the require("sequelize") class
+    const t=await sequelize.transaction();
     console.log('on addexpense',req.session.userId);
     try {
+        //transaction creates a function and adds operation inside it if all operation succeed it commits or all operation fails
+        //here we do two action update the total spent in user and create a new expense so one fails fails entirely
+        
+
         //  const user = await user_database.findByPk(req.session.userId);
         const user = await user_database.findByPk(req.session.userId);
         if(user){
             user.totalspent=parseInt(user.totalspent)+parseInt(amount);
-            user.save();
+            user.save({transaction:t});
         }
         await user.createExpense({
             amount: amount,
             description: description,
             category: category
-        })
-            .then(() => {
-                console.log(amount, description, category);
-                res.json({ amount, description, category })
-            })
-            .catch(error => console.log(error))
+        },{transaction:t})
+            
+            await t.commit();
+            res.json({ amount, description, category })
+          
     } catch (err) {
+        await t.rollback();
         console.log(err);
     }
 }
