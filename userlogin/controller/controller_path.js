@@ -24,7 +24,8 @@ exports.add_requser = async (req, res) => {
                     return user_database.create({
                         name: name,
                         mail: mail,
-                        password: encrypted_password
+                        password: encrypted_password,
+                        totalspent:0,
                     })
                 }
                 else {
@@ -109,6 +110,10 @@ exports.add_expense = async (req, res) => {
     try {
         //  const user = await user_database.findByPk(req.session.userId);
         const user = await user_database.findByPk(req.session.userId);
+        if(user){
+            user.totalspent=parseInt(user.totalspent)+parseInt(amount);
+            user.save();
+        }
         await user.createExpense({
             amount: amount,
             description: description,
@@ -140,17 +145,23 @@ exports.get_expense=async(req,res)=>{
 
 exports.getleaderboard=async(req,res)=>{
    try{
-      const allexpenses=await expensedb.findAll({
-        attributes:[
-            'userId',
-            [Sequelize.fn('sum',Sequelize.col('amount')),'totalspent']//sum the amount of the particular group and save them in totalsent
-        ],
-        group:['userId'],//grouping by userId
-        include:[{model:userdb,attributes:['name']}],
-        order:[[Sequelize.col('totalspent'),'DESC']],
+    //   const allexpenses=await expensedb.findAll({
+    //     attributes:[
+    //         'userId',
+    //         [Sequelize.fn('sum',Sequelize.col('amount')),'totalspent']//sum the amount of the particular group and save them in totalsent
+    //     ],
+    //     group:['userId'],//grouping by userId
+    //     include:[{model:userdb,attributes:['name']}],
+    //     order:[[Sequelize.col('totalspent'),'DESC']],
        
-      }) 
-      res.json(allexpenses);
+    //   }) 
+
+    // instead of that we r creating a total spent on user table which will be updated for every user expenses
+    const alluserexpenses=await userdb.findAll({
+        attributes:['id','name','totalspent'],
+        order:[['totalspent','DESC']],
+    })
+      res.json(alluserexpenses);
    }catch(err){
     console.log('while getting leaderboard from backend',err)
    }

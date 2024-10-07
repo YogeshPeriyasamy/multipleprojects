@@ -179,7 +179,7 @@
     //         }
     //     }
     //   ] so to get the user name we should use expense.user.name and in the backend we must add ..include:[{model:userdb,attributes:['name']}]
-      list.textContent=`${expense.userId}-${expense.user.name}---${expense.totalspent}`;
+      list.textContent=`${expense.id}-${expense.name}---${expense.totalspent}`;
       const listbox=document.querySelector(".leaderboardlist");
       listbox.appendChild(list);
     }
