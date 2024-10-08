@@ -23,6 +23,6 @@ const Expense=sequelize.define("expense",{
 },
 {
     freezeTableName: true, // This will prevent Sequelize from pluralizing the table name
-    timestamps: false // this stops crete at and updated at
+    //timestamps: false // this stops crete at and updated at
 })
 module.exports=Expense;
