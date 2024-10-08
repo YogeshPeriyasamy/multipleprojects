@@ -95,7 +95,7 @@
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "Delete"; // Set button text
     deleteButton.className = "delete-button"; // Optional class for styling or functionality
-
+    
     // Append both to the list item container
     const listItemContainer = document.createElement("div");
     listItemContainer.className="listdiv";
@@ -104,7 +104,16 @@
 
     // Append to the main list
     document.querySelector('.listitems').appendChild(listItemContainer);
-
+    
+    //to remove the list from ui
+    deleteButton.addEventListener('click',async()=>{
+        expenseid=await expense.id;
+        console.log(expense.id);
+        const deleteres=await axios.post('http://localhost:3000/user/deleteexpense', {del_id:expense.id,amount:expense.amount },{ withCredentials: true })
+        console.log(deleteres.data.message);
+        listItemContainer.remove();
+    })
+    }
     // to get the premium
     document.getElementById("premium_button").addEventListener('click',async(event)=>{
         event.preventDefault();
@@ -135,7 +144,7 @@
             console.log(err);
         }
     })
-    }
+    
     async function verify_payment(response){
         console.log('after payment',response);
         try{

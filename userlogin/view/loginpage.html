@@ -10,12 +10,17 @@
 </head>
 
 <body>
-    <div class="mainbox">
-        <label for="email">Mail :</label>
-        <input type="email" name="mail" id="mail" required>
-        <label for="password">Password :</label>
-        <input type="text" name="password" id="password" required>
-        <button type="submit" id="loginbutton">Log in</button>
+    <div class="outerbox" id="outerbox">
+        <div class="mainbox">
+            <label for="email">Mail :</label>
+            <input type="email" name="mail" id="mail" required>
+            <label for="password">Password :</label>
+            <input type="text" name="password" id="password" required>
+            <button type="submit" id="loginbutton">Log in</button>
+        </div>
+        <div class="forgotpassword">
+            <a id="forgotpassword" href="#">forgotpassword?</a>
+        </div>
     </div>
 </body>
 <script>
@@ -25,7 +30,7 @@
         try {
             await axios.post('http://localhost:3000/user/login', { mail, password }, {
                 headers: {
-                    'Content-Type': 'application/json' 
+                    'Content-Type': 'application/json'
                 }, withCredentials: true
             })
                 .then((res) => {
@@ -41,6 +46,17 @@
         } catch (err) {
             console.log(err);
         }
+    })
+    document.getElementById("forgotpassword").addEventListener('click',()=>{
+        document.getElementById("outerbox").innerHTML=`
+        <div class="forgetemailbox">
+            <form action='http://localhost:3000/user/send_forgotpassword_mail' method="POST">
+                <label for="forgetmail">Mail :</label>
+                <input type="email" name="forgottenmail" id="forgetmail" required>
+                <button type="submit" id="forgetpassword">Send</button>
+            </form>
+        </div>
+        `
     })
 
 </script>

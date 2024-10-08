@@ -121,14 +121,14 @@ exports.add_expense = async (req, res) => {
             user.totalspent=parseInt(user.totalspent)+parseInt(amount);
             user.save({transaction:t});
         }
-        await user.createExpense({
+        const newexpense=await user.createExpense({
             amount: amount,
             description: description,
             category: category
         },{transaction:t})
             
             await t.commit();
-            res.json({ amount, description, category })
+            res.json({ id:newexpense.id,amount, description, category })
           
     } catch (err) {
         await t.rollback();
@@ -171,5 +171,33 @@ exports.getleaderboard=async(req,res)=>{
       res.json(alluserexpenses);
    }catch(err){
     console.log('while getting leaderboard from backend',err)
+   }
+}
+
+//to delete expense from the expensedb along with user total spent amount rreduction
+exports.delete_expense=async(req,res)=>{
+   const{del_id,amount}=req.body;
+   console.log('while deleteing get log ',del_id,amount);
+   const d=await sequelize.transaction();
+   try{
+   const to_delete=await expensedb.findOne({where:{id:del_id}})
+   if(to_delete){
+    await to_delete.destroy({transaction:d});
+    const user = await user_database.findByPk(req.session.userId);
+    if(user){
+        user.totalspent=parseInt(user.totalspent)-parseInt(amount);
+        await user.save({transaction:d})
+    }
+    await d.commit();
+    res.json({message: 'Expense deleted'});
+   }
+   else {
+    // If the expense was not found
+    res.status(404).json({ message: 'Expense not found' });
+    await d.rollback(); // Rollback the transaction if nothing was deleted
+}
+   }catch(err){
+    await d.rollback();
+    console.log('while deleting expense',err)
    }
 }
