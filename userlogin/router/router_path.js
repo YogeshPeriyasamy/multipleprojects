@@ -41,4 +41,8 @@ router.get('/getleaderboard',controller_route.getleaderboard);
 router.post('/deleteexpense',controller_route.delete_expense);
 //to send the forgetpassword mail
 router.post('/send_forgotpassword_mail',forget_passwordroute.sendforgetmail);
+// to reset the password
+router.use('/resetpassword/:resetid',forget_passwordroute.resetpassword);
+//to change the forgotten password with new password
+router.post('/resetnewpassword',forget_passwordroute.changenewpassword);
 module.exports=router;

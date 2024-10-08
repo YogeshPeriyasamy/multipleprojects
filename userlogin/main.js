@@ -38,6 +38,7 @@ const sequelize = require('./util/database');
 const userdb = require('./models/user');      
 const expensedb=require('./models/expense');
 const orderdb=require('./models/orderpremium');
+const passworddb=require('./models/resetpassword');
 //establishing connection between tables
 expensedb.belongsTo(userdb, {
     foreignKey: {
@@ -53,6 +54,8 @@ userdb.hasMany(expensedb, {
 userdb.hasMany(orderdb);
 orderdb.belongsTo(userdb);
 
+userdb.hasMany(passworddb);
+passworddb.belongsTo(userdb);
 
 // Sync models and start the server
 sequelize.sync()

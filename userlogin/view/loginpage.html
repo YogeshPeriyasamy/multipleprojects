@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
 </head>
 
@@ -47,17 +47,30 @@
             console.log(err);
         }
     })
-    document.getElementById("forgotpassword").addEventListener('click',()=>{
-        document.getElementById("outerbox").innerHTML=`
-        <div class="forgetemailbox">
-            <form action='http://localhost:3000/user/send_forgotpassword_mail' method="POST">
-                <label for="forgetmail">Mail :</label>
-                <input type="email" name="forgottenmail" id="forgetmail" required>
-                <button type="submit" id="forgetpassword">Send</button>
-            </form>
-        </div>
-        `
-    })
+    document.getElementById("forgotpassword").addEventListener('click', () => {
+    document.getElementById("outerbox").innerHTML = `
+    <div class="forgetemailbox">
+        <form id="forgetpasswordform">
+            <label for="forgetmail">Mail :</label>
+            <input type="email" name="forgottenmail" id="forgetmail" required>
+            <button type="submit" id="forgetpassword">Send</button>
+        </form>
+    </div>
+    `;
+
+    // Now add the event listener after the HTML has been injected
+    document.getElementById("forgetpasswordform").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const mail = document.getElementById("forgetmail").value;
+        console.log("get forget mail", mail);
+        try {
+            const response = await axios.post('http://localhost:3000/user/send_forgotpassword_mail', { mail }, { withCredentials: true });
+            alert(response.data.message);
+        } catch (err) {
+            console.log('Error while sending forgot password mail', err);
+        }
+    });
+});
 
 </script>
 

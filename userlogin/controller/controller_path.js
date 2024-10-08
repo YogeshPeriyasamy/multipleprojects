@@ -70,7 +70,7 @@ exports.login_details = async (req, res) => {
                         //as axios doesnot understanding the res.redirect
                         // return res.redirect('/user/openexpense');
                         //setting req.user when the userlogged in
-                        req.session.userId = user.id; // Store a plain object instead;
+                        req.session.userId = user.id; 
 
                         req.session.save(err => {
                             if (err) {
