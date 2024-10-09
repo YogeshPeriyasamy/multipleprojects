@@ -26,7 +26,9 @@ exports.add_requser = async (req, res) => {
                         name: name,
                         mail: mail,
                         password: encrypted_password,
+                        ispremium:false,
                         totalspent:0,
+
                     })
                 }
                 else {
@@ -64,7 +66,7 @@ exports.login_details = async (req, res) => {
                 //     // Password is correct
                 //     return res.status(200).json({message: "User logged in"});
                 // } 
-                bcrypt.compare(password, user.password, (err, result) => {
+                bcrypt.compare(password, user.password,async(err, result) =>{
                     if (result) {
                         // return res.json({ message: " user logged" });
                         //as axios doesnot understanding the res.redirect
@@ -77,9 +79,16 @@ exports.login_details = async (req, res) => {
                                 console.error('Session save error:', err);
                                 return res.status(500).json({ message: 'Error saving session' });
                             }
-                            
-                            return res.json({ redirect: true, url: 'http://localhost:3000/user/openexpense' });
+                          
                         });
+                        //check whether its already premium
+                        const premiumstatus=await user.ispremium;
+                        if(premiumstatus==true){
+                            return res.json({ redirect: true, url: 'http://localhost:3000/user/openpremiumexpense' });
+                        }
+                        else{
+                        return res.json({ redirect: true, url: 'http://localhost:3000/user/openexpense' });
+                        }
                     }
                     else {
                         // Password does not match
@@ -201,3 +210,42 @@ exports.delete_expense=async(req,res)=>{
     console.log('while deleting expense',err)
    }
 }
+
+//open the premium page
+exports.openpremiumpage=(req,res)=>{
+    res.sendFile(path.join(__dirname,'../view/premiumpage.html'));
+}
+
+//get the reports
+exports.get_reports=async(req,res)=>{
+    const {type}=req.query;
+    console.log(type);
+      let dateformat;
+      if(type=="daily"){
+        // IN SEQ  Y GIVES year four digit year 2024 y-gives 24 for 24
+        //m gives for month 01-12 if its M-gives 01=January 
+        dateformat='%Y-%m-%d';
+      }
+      else if(type=="monthly"){
+        dateformat='%Y-%m';
+      }
+      else{
+        dateformat='%Y' 
+      }
+    try{
+        const reportdata=await expensedb.findAll({
+            attributes:[
+                //it convers the createdaAT field to the req date format
+                [Sequelize.fn('DATE_FORMAT',Sequelize.col('createdAt'),dateformat),'Date'],
+                'category',
+                [Sequelize.fn('SUM',Sequelize.col('amount')),'totalspent'],
+            ],
+            group:['Date', 'category'],
+            order:[[Sequelize.col('Date'),'DESC']]
+        })
+        res.json(reportdata);
+    }catch(err){
+        console.log("backend error when getting reports",err)
+    }
+}
+

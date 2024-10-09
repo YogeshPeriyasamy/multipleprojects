@@ -65,7 +65,11 @@ exports.verify_payment=async(req,res)=>{
                 order.status="success";
                 order.paymentid=razorpay_payment_id;
                 await order.save();
-                res.json({message:"Payment successful"});
+                //cahnge the ispremium inuertable to true
+                const user=await user_db.findByPk(req.session.userId);
+                user.ispremium=true;
+                await user.save();
+                return res.json({message:"payment successful", redirect: true, url: 'http://localhost:3000/user/openpremiumexpense' });
             }
             else{
                 res.json({message:"order not found"}); 
@@ -81,26 +85,26 @@ exports.verify_payment=async(req,res)=>{
 }
 
 //check whether its already premium
-exports.checkpremiumstaus=async(req,res)=>{
-    try{
-    const last_order=await order_db.findOne({
-        where:{userId:req.session.userId},
-        order : [['createdAt','DESC']],
-        limit:1
-    });
-    console.log('last order',last_order);
-    if(last_order){
-        if(last_order.status=="success"){
-            res.json({status:"success"});
-        }
-        else{
-            res.json({status:"failed"});
-        }
-    }
-    else{
-        res.json({status:"no last order"});
-    }
-}catch(err){
-    console.log('while finding premium status internal error',err)
-}
-}
+// exports.checkpremiumstaus=async(req,res)=>{
+//     try{
+//     const last_order=await order_db.findOne({
+//         where:{userId:req.session.userId},
+//         order : [['createdAt','DESC']],
+//         limit:1
+//     });
+//     console.log('last order',last_order);
+//     if(last_order){
+//         if(last_order.status=="success"){
+//             res.json({status:"success"});
+//         }
+//         else{
+//             res.json({status:"failed"});
+//         }
+//     }
+//     else{
+//         res.json({status:"no last order"});
+//     }
+// }catch(err){
+//     console.log('while finding premium status internal error',err)
+// }
+// }

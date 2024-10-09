@@ -33,9 +33,10 @@ router.post('/purchase/premium',purchase_route.createpremium);
 //to verify payment
 router.post('/verify',purchase_route.verify_payment);
 
-//to check whethet its already premium
-router.get('/checkstatus',purchase_route.checkpremiumstaus);
-//to get the leaderboard
+router.get('/openpremiumexpense',controller_route.openpremiumpage);
+// //to check whethet its already premium
+// router.get('/checkstatus',purchase_route.checkpremiumstaus);
+// //to get the leaderboard
 router.get('/getleaderboard',controller_route.getleaderboard);
 //to delete the expense
 router.post('/deleteexpense',controller_route.delete_expense);
@@ -45,4 +46,6 @@ router.post('/send_forgotpassword_mail',forget_passwordroute.sendforgetmail);
 router.use('/resetpassword/:resetid',forget_passwordroute.resetpassword);
 //to change the forgotten password with new password
 router.post('/resetnewpassword',forget_passwordroute.changenewpassword);
+//to get the reports
+router.get('/getreports',controller_route.get_reports);
 module.exports=router;
