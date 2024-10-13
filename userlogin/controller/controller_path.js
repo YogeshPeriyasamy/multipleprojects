@@ -151,8 +151,9 @@ exports.add_expense = async (req, res) => {
 //to get the old expense from db
 exports.get_expense=async(req,res)=>{
     const currentpage=parseInt(req.query.pageno);
+    const limit=parseInt(req.query.limit);
     console.log('currentpage',currentpage);
-    const limit=5;
+    
     const offset=(currentpage-1)*limit
    try{
      const user=await user_database.findByPk(req.session.userId);
