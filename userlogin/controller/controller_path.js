@@ -4,6 +4,8 @@ const expensedb=require('../models/expense');
 const userdb=require('../models/user');
 const path = require("path");
 const bcrypt = require("bcrypt");
+const AWS=require('aws-sdk');// amazon web service to download files
+
 exports.signup_page = (req, res) => {
     res.sendFile(path.join(__dirname, '../view/signup.html'));
 }
@@ -148,12 +150,22 @@ exports.add_expense = async (req, res) => {
 
 //to get the old expense from db
 exports.get_expense=async(req,res)=>{
+    const currentpage=parseInt(req.query.pageno);
+    console.log('currentpage',currentpage);
+    const limit=5;
+    const offset=(currentpage-1)*limit
    try{
      const user=await user_database.findByPk(req.session.userId);
-     const expenses=await user.getExpenses();
-     res.json(expenses);
+     const{count,rows: expenses }=await expensedb.findAndCountAll({
+        limit,
+        offset,
+        order:[['createdAt','DESC']]
+     });
+     console.log(expenses);
+     const totalpages=Math.ceil(count/limit);
+     res.json({totalpages,expenses});
    }catch(err){
-    console.log(err);
+    console.log('while getting old expenses to display in ui',err);
    }
 }
 
@@ -246,6 +258,47 @@ exports.get_reports=async(req,res)=>{
         res.json(reportdata);
     }catch(err){
         console.log("backend error when getting reports",err)
+    }
+}
+
+// to donload the expense
+exports.downloadexpense=async(req,res)=>{
+    try{
+   const user = await user_database.findByPk(req.session.userId);
+   const expenses=await user.getExpenses()
+   const stringifiedexpense=JSON.stringify(expenses);
+   const filename=`expense${req.session.userId}.txt`;
+   ///////////////
+   const BUCKET_NAME="try1a";
+   const IAM_USER_KEY=process.env.AWS_KEY_ID;
+   const IAM_USER_SECRET=process.env.AWS_SECRET_KEY;
+   // giving access key to creae a function
+   let s3bucket=new AWS.S3({
+       accessKeyId:IAM_USER_KEY,
+       secretAccessKey:IAM_USER_SECRET,
+   })
+   //create a bucket
+   
+    var params={
+        Bucket:BUCKET_NAME,
+        Key:filename,
+        Body:stringifiedexpense,
+        ACL:'public-read'// it makes it to be read oublicly without need of giving read access
+
+    }
+    // upload it
+    s3bucket.upload(params,(err,s3res)=>{
+        if(err){
+            console.log('after bucket submission',err);
+        }
+        else{
+            console.log('bucket uploaded',s3res);
+            const s3url=s3res.Location;
+            res.json({message:"success",url:s3url});
+        }
+    })
+   }catch(err){
+        console.log('while downloading expense',err)
     }
 }
 

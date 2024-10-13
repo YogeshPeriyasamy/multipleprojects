@@ -26,13 +26,17 @@
                 <option>Utensils</option>
                 <option>Groceries</option>
             </select>
+            <div class="inputboxbutton">
             <button type="submit" id="add_expense">Add expense</button>
             <button type="submit" id="leaderboard">Show leaderboard</button>
+            <button type="submit" id="downloadexpense">Download</button>
+            </div>
         </div>
 
         <div class="listbox">
             <h3>Expenses</h3>
             <ul class="listitems"></ul>
+            <div class="pagination"></div>
         </div>
         <div class="leaderboard">
             <h3>Leader board</h3>
@@ -50,12 +54,15 @@
     </div>
 </body>
 <script>
-    
+    let current_page=1;//by default at first
     async function getoldexpense(){
         try{
-          const old_expenses= await axios.get('http://localhost:3000/user/getexpense',{withCredentials:true})
-          old_expenses.data.forEach(old_expense=>{
+        document.querySelector('.listitems').innerHTML="";//remove the current page expenses to show other page 
+          const old_expenses= await axios.get(`http://localhost:3000/user/getexpense?pageno=${current_page}`,{withCredentials:true})
+          pagerendering(old_expenses.data.totalpages);
+          old_expenses.data.expenses.forEach(old_expense=>{
             addexpense_list(old_expense);
+            
           })
         }catch (err){
             console.log(err);
@@ -77,11 +84,29 @@
         try{
             const response=await axios.post('http://localhost:3000/user/addexpense', { amount, description,category },{ withCredentials: true })
             console.log(response.data);
-            addexpense_list(response.data);
+            getoldexpense();
             }catch (error){
             console.log(error);
         }
     })
+
+    // render the pages as per total no of expenses
+    
+    function pagerendering(totalpages){
+        let pagediv=document.querySelector('.pagination')
+        pagediv.innerHTML="";
+        for(let i=1;i<=totalpages;i++){
+            let page=document.createElement("button");
+            page.textContent=i;
+            page.disabled=i===current_page;//disable the current page
+            page.addEventListener('click',()=>{
+                current_page=i;
+                getoldexpense();
+            })
+            pagediv.appendChild(page);
+        }
+
+    }
     function addexpense_list(expense){
          // Create list item and button
     const expenselist = document.createElement("li");
@@ -179,6 +204,20 @@
             console.log("front end report creation",err);
         }
 
+    })
+    //add download expense frontend
+    document.getElementById("downloadexpense").addEventListener('click',async()=>{
+       try{
+        const downloads=await axios.get(`http://localhost:3000/user/downloadexpense`,{ withCredentials: true });
+        if(downloads.data.message=="success"){
+            const link = document.createElement('a');
+            link.href = downloads.data.url;
+            link.download = 'expenses.txt'; //optional by which name we like to download it
+            link.click(); // Trigger the download
+        }
+       }catch(err){
+        console.log('in frontend download expense',err)
+       }
     })
 </script>
 </html>

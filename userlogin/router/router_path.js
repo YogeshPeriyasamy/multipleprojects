@@ -48,4 +48,6 @@ router.use('/resetpassword/:resetid',forget_passwordroute.resetpassword);
 router.post('/resetnewpassword',forget_passwordroute.changenewpassword);
 //to get the reports
 router.get('/getreports',controller_route.get_reports);
+// to get the downlad expense
+router.get('/downloadexpense',controller_route.downloadexpense);
 module.exports=router;
